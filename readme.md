@@ -21,7 +21,7 @@
 - [🚀 Quick Start](#-quick-start)
 - [🔍 Penjelasan Detail](#-penjelasan-detail)
 - [📊 Perbandingan Performance](#-perbandingan-performance)
-- [💡 Konsep & Best Practices](#-konsep--best-practices)
+- [💡 Konsep &amp; Best Practices](#-konsep--best-practices)
 - [🛠️ Tech Stack](#️-tech-stack)
 - [📚 Referensi](#-referensi)
 - [👤 Author](#-author)
@@ -36,7 +36,7 @@
 ┌─────────────────────────────────────────────────────────────┐
 │  Proyek ini mendemonstrasikan perbedaan fundamental antara │
 │  komputasi SEQUENTIAL (berurutan) dan PARALLEL (paralel)   │
-│  menggunakan studi kasus sederhana: penjumlahan 1-5        │
+│  menggunakan studi kasus sederhana: perkalian matrix        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -44,10 +44,10 @@
 
 Program ini membandingkan **dua pendekatan** berbeda dalam menyelesaikan masalah yang sama:
 
-| 🔄 Sequential | ⚡ Parallel |
-|---------------|------------|
-| Eksekusi berurutan | Eksekusi bersamaan |
-| Single Process | Multiple Processes |
+| 🔄 Sequential            | ⚡ Parallel           |
+| ------------------------ | --------------------- |
+| Eksekusi berurutan       | Eksekusi bersamaan    |
+| Single Process           | Multiple Processes    |
 | Simple & Straightforward | Complex tapi Scalable |
 
 ---
@@ -60,10 +60,10 @@ Program ini membandingkan **dua pendekatan** berbeda dalam menyelesaikan masalah
 
 ### 🔸 Sequential Computing
 ```
-┌──────────────────┐
-│  Step 1 → 2 → 3  │
-│    → 4 → 5       │
-└──────────────────┘
+┌──────────────────────┐
+│  Hitung tiap elemen  │
+│  hasil secara urut   │
+└──────────────────────┘
 ```
 ✅ Mudah dipahami  
 ✅ Low overhead  
@@ -74,11 +74,11 @@ Program ini membandingkan **dua pendekatan** berbeda dalam menyelesaikan masalah
 
 ### 🔸 Parallel Computing
 ```
-┌──────────────────┐
-│  Process 1: 1→3  │
-│  Process 2: 4→5  │
-│    (Concurrent)  │
-└──────────────────┘
+┌──────────────────────┐
+│  Process row-0       │
+│  Process row-1       │
+│   (Concurrent)       │
+└──────────────────────┘
 ```
 ✅ High performance  
 ✅ Scalable  
@@ -94,16 +94,16 @@ Program ini membandingkan **dua pendekatan** berbeda dalam menyelesaikan masalah
 
 ```
 📦 Wokspaces
- ┣ 📜 sequential.py     # Sequential computation implementation
- ┣ 📜 paralel.py        # Parallel computation with multiprocessing
+ ┣ 📜 sequential.py     # Sequential matrix multiplication
+ ┣ 📜 paralel.py        # Parallel matrix multiplication with multiprocessing
  ┗ 📜 readme.md         # You're here! 📍
 ```
 
 <details>
 <summary>🔍 Click untuk melihat detail file</summary>
 
-- **sequential.py**: Implementasi komputasi serial menggunakan loop
-- **paralel.py**: Implementasi parallel computing dengan Python's multiprocessing
+- **sequential.py**: Implementasi perkalian matrix secara serial dengan nested loop
+- **paralel.py**: Implementasi parallel matrix multiplication per baris dengan `multiprocessing`
 - **readme.md**: Dokumentasi lengkap project
 
 </details>
@@ -130,13 +130,10 @@ python sequential.py
 **📤 Expected Output:**
 
 ```
-Serial Computation
-Step 1: total = 1
-Step 2: total = 3
-Step 3: total = 6
-Step 4: total = 10
-Step 5: total = 15
-Final Serial sum is 15
+Sequential Matrix Multiplication
+A = [[1, 2, 3], [4, 5, 6]]
+B = [[7, 8], [9, 10], [11, 12]]
+Result = [[58, 64], [139, 154]]
 ```
 
 ### 🔸 Running Parallel
@@ -149,10 +146,12 @@ python paralel.py
 **📤 Expected Output:**
 
 ```
-Parallel Computation:
-Process 1: sum(1 to 3) = 6
-Process 2: sum(4 to 5) = 9
-Final Parallel Sum = 15
+Parallel Matrix Multiplication
+A = [[1, 2, 3], [4, 5, 6]]
+B = [[7, 8], [9, 10], [11, 12]]
+Process row-0: [58, 64]
+Process row-1: [139, 154]
+Result = [[58, 64], [139, 154]]
 ```
 
 ---
@@ -162,14 +161,18 @@ Final Parallel Sum = 15
 ### 🔵 Sequential Computing (`sequential.py`)
 
 **💡 Cara Kerja:**
-- ✔️ Menggunakan **loop for** sederhana
-- ✔️ Setiap step menunggu step sebelumnya selesai
-- ✔️ Eksekusi: `Step 1 → 2 → 3 → 4 → 5`
+
+- ✔️ Menggunakan **nested loop** untuk menghitung setiap elemen matrix hasil
+- ✔️ Semua perhitungan dikerjakan berurutan dalam satu proses
+- ✔️ Cocok untuk baseline pembanding sebelum versi paralel
 
 **📝 Key Points:**
+
 ```python
-for i in range(1, n + 1):
-    total += i  # Sequential addition
+for i in range(rows_a):
+    for j in range(cols_b):
+        for k in range(cols_a):
+            result[i][j] += matrix_a[i][k] * matrix_b[k][j]
 ```
 
 ---
@@ -184,41 +187,39 @@ for i in range(1, n + 1):
         ┌────────┴────────┐
         │                 │
    ┌────▼────┐      ┌────▼────┐
-   │Process 1│      │Process 2│
-   │Sum(1-3) │      │Sum(4-5) │
-   │Result: 6│      │Result: 9│
+   │Row 0    │      │Row 1    │
+   │[58, 64] │      │[139,154]│
+   │Done     │      │Done     │
    └────┬────┘      └────┬────┘
         │                 │
         └────────┬────────┘
                  │
            ┌─────▼─────┐
-           │Queue: 6,9 │
+         │Queue: rows│
            └─────┬─────┘
                  │
           ┌──────▼──────┐
-          │Final Sum: 15│
+        │Final Matrix │
           └─────────────┘
 ```
 
 **💡 Cara Kerja:**
+
 - ✔️ Menggunakan **`multiprocessing` module**
-- ✔️ Membagi task menjadi **2 proses independen**
+- ✔️ Membagi task per baris matrix A ke **proses independen**
 - ✔️ Komunikasi via **Queue**
 - ✔️ `join()` untuk sinkronisasi
 
 **📝 Key Components:**
+
 ```python
-# Process creation
-p1 = Process(target=partial_sum, args=(1, 3, q, 1))
-p2 = Process(target=partial_sum, args=(4, 5, q, 2))
+for i, row in enumerate(matrix_a):
+    process = Process(target=multiply_row, args=(i, row, matrix_b, q))
+    processes.append(process)
+    process.start()
 
-# Concurrent execution
-p1.start()
-p2.start()
-
-# Wait for completion
-p1.join()
-p2.join()
+for process in processes:
+    process.join()
 ```
 
 ---
@@ -236,8 +237,8 @@ p2.join()
 <tbody>
 <tr>
 <td><b>⏱️ Time Complexity</b></td>
-<td>O(n)</td>
-<td>O(n/p) <i>p=processes</i></td>
+<td>O(m × n × k)</td>
+<td>≈ O((m × n × k)/p) <i>p=processes</i></td>
 </tr>
 <tr>
 <td><b>💾 Memory</b></td>
@@ -266,7 +267,7 @@ p2.join()
 
 ## 💡 Konsep & Best Practices
 
-###  Kapan Menggunakan Sequential?
+### Kapan Menggunakan Sequential?
 
 ```
 ✅ GUNAKAN SEQUENTIAL JIKA:
@@ -277,7 +278,7 @@ p2.join()
 -  Simplicity first (maintainability penting)
 ```
 
-### ⚡ Kapan Menggunakan Parallel?
+### Kapan Menggunakan Parallel?
 
 ```
 ✅ GUNAKAN PARALLEL JIKA:
@@ -288,16 +289,16 @@ p2.join()
 -  Performance critical (speed matters)
 ```
 
-### 🏆 Keuntungan Parallel Computing
+### Keuntungan Parallel Computing
 
 <div align="center">
 
-| Icon | Benefit | Description |
-|:----:|---------|-------------|
-| ⚡ | **Speed** | Eksekusi lebih cepat untuk large datasets |
-| 🔄 | **Scalability** | Mudah menambah workers/processes |
-| 🖥️ | **CPU Utilization** | Maksimalkan penggunaan multi-core |
-| 📊 | **Throughput** | Handle lebih banyak task simultaneously |
+| Icon | Benefit                   | Description                               |
+| :--: | ------------------------- | ----------------------------------------- |
+|  ⚡  | **Speed**           | Eksekusi lebih cepat untuk large datasets |
+|  🔄  | **Scalability**     | Mudah menambah workers/processes          |
+| 🖥️ | **CPU Utilization** | Maksimalkan penggunaan multi-core         |
+|  📊  | **Throughput**      | Handle lebih banyak task simultaneously   |
 
 </div>
 
@@ -307,11 +308,11 @@ p2.join()
 
 <div align="center">
 
-| Technology | Purpose | Version |
-|:----------:|---------|:-------:|
-| ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logo=python&logoColor=white) | Main Language | 3.x |
+|                                                  Technology                                                  | Purpose            | Version |
+| :-----------------------------------------------------------------------------------------------------------: | ------------------ | :------: |
+|          ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logo=python&logoColor=white)          | Main Language      |   3.x   |
 | ![Multiprocessing](https://img.shields.io/badge/-Multiprocessing-FF6B6B?style=flat&logo=python&logoColor=white) | Parallel Execution | Built-in |
-| ![Queue](https://img.shields.io/badge/-Queue-4ECDC4?style=flat&logo=buffer&logoColor=white) | IPC Mechanism | Built-in |
+|           ![Queue](https://img.shields.io/badge/-Queue-4ECDC4?style=flat&logo=buffer&logoColor=white)           | IPC Mechanism      | Built-in |
 
 </div>
 
@@ -332,7 +333,7 @@ p2.join()
 
 ### 🎓 Mata Kuliah
 
-**IFB-206 Komputasi Paralel & Sistem Terdistribusi**  
+**IFB-206 Komputasi Paralel & Sistem Terdistribusi**
 📖 Tugas - Sequential vs Parallel Computing
 
 </div>
@@ -362,7 +363,7 @@ p2.join()
 - **join() untuk Sinkronisasi**: Method `join()` memastikan semua child processes selesai sebelum main process lanjut
 - **Small Dataset Caveat**: Untuk dataset kecil (seperti demo ini), sequential bisa lebih cepat karena overhead dari process creation
 
-###  Tips untuk Development:
+### Tips untuk Development:
 
 1. **Testing**: Gunakan `time.time()` untuk measure execution time
 2. **Debugging**: Parallel debugging lebih sulit, use logging extensively
@@ -378,7 +379,7 @@ p2.join()
 
 ### 🎓 Student Information
 
-**Robi Rizki Permana**  
+**Robi Rizki Permana**
  NIM: `152024141`
 
 ---
@@ -405,7 +406,7 @@ p2.join()
 ### 📬 Connect
 
 [![GitHub](https://img.shields.io/badge/-GitHub-181717?style=flat&logo=github)](https://github.com)
-[![Email](https://img.shields.io/badge/-Email-D14836?style=flat&logo=gmail&logoColor=white)](mailto:your.email@example.com)
+[![Email](https://img.shields.io/badge/-Email-D14836?style=flat&logo=gmail&logoColor=white)](mailto:robigold9@gmail.com)
 
 </div>
 
@@ -413,14 +414,12 @@ p2.join()
 
 <div align="center">
 
-### 
-
 ---
 
 ```
 ┌────────────────────────────────────────────┐
-│  © 2026 Komputasi Paralel & Distributed   │
-│     Systems - Informatika ITB              │
+│  © 2026 Komputasi Paralel & Distributed    │
+│     Systems - Informatika ITENAS           │
 └────────────────────────────────────────────┘
 ```
 
