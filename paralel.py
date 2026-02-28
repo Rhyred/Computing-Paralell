@@ -1,40 +1,50 @@
 from multiprocessing import Process, Queue
 
-def partial_sum(start, end, q, pid):
-    """
-    Fungsi ini akan dieksekusi oleh masing-masing proses.
-    Menghitung jumlah dari 'start' sampai 'end'.
-    """
-    s = sum(range(start, end + 1))
-    print(f"Process {pid}: sum({start} to {end}) = {s}")
-    
-    # Masukkan hasil perhitungan ke dalam Queue agar bisa diambil di main program
-    q.put(s)
+
+def multiply_row(row_index, row_values, matrix_b, q):
+    cols_b = len(matrix_b[0])
+    result_row = []
+
+    for j in range(cols_b):
+        value = 0
+        for k in range(len(row_values)):
+            value += row_values[k] * matrix_b[k][j]
+        result_row.append(value)
+
+    print(f"Process row-{row_index}: {result_row}")
+    q.put((row_index, result_row))
 
 
 if __name__ == "__main__":
-    print("Parallel Computation:")
-    
-    # Membuat Queue untuk menyimpan hasil dari tiap proses
+    matrix_a = [
+        [1, 2, 3],
+        [4, 5, 6],
+    ]
+
+    matrix_b = [
+        [7, 8],
+        [9, 10],
+        [11, 12],
+    ]
+
+    print("Parallel Matrix Multiplication")
+    print(f"A = {matrix_a}")
+    print(f"B = {matrix_b}")
+
     q = Queue()
-    
-    # Mendefinisikan proses 1 dan proses 2
-    # target: fungsi yang akan dijalankan
-    # args: argumen yang dikirim ke fungsi (start, end, queue, process_id)
-    p1 = Process(target=partial_sum, args=(1, 3, q, 1))
-    p2 = Process(target=partial_sum, args=(4, 5, q, 2))
-    
-    # Memulai proses (menjalankan fungsi partial_sum secara bersamaan)
-    p1.start()
-    p2.start()
-    
-    # Menunggu kedua proses selesai sebelum melanjutkan baris kode di bawahnya
-    p1.join()
-    p2.join()
-    
-    # Mengambil hasil dari Queue (Sum1 dan Sum2) lalu menjumlahkannya
-    final_sum = 0
+    processes = []
+
+    for i, row in enumerate(matrix_a):
+        process = Process(target=multiply_row, args=(i, row, matrix_b, q))
+        processes.append(process)
+        process.start()
+
+    for process in processes:
+        process.join()
+
+    result = [None] * len(matrix_a)
     while not q.empty():
-        final_sum += q.get()
-        
-    print(f"Final Parallel Sum = {final_sum}")
+        row_index, row_result = q.get()
+        result[row_index] = row_result
+
+    print(f"Result = {result}")
