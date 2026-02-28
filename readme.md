@@ -93,7 +93,7 @@ Program ini membandingkan **dua pendekatan** berbeda dalam menyelesaikan masalah
 ## 📁 Struktur Project
 
 ```
-📦 Tugas1
+📦 Wokspaces
  ┣ 📜 sequential.py     # Sequential computation implementation
  ┣ 📜 paralel.py        # Parallel computation with multiprocessing
  ┗ 📜 readme.md         # You're here! 📍
@@ -123,8 +123,6 @@ Program ini membandingkan **dua pendekatan** berbeda dalam menyelesaikan masalah
 
 ```bash
 # Navigate to project directory
-cd Tugas1
-
 # Run sequential program
 python sequential.py
 ```
@@ -416,8 +414,6 @@ p2.join()
 <div align="center">
 
 ### 
-
-**Made with ❤️ for Learning Parallel Computing**
 
 ---
 
